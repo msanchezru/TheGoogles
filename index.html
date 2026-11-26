@@ -1,12 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071b32">
+  <meta name="description" content="Discover marine life in real time with AI Smart Diving Goggles. Explore underwater, learn as you go, and see the ocean differently.">
+  <title>The Googles — See the ocean differently</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #071b32;
+      --ink-soft: #0c2947;
+      --blue: #2b56c8;
+      --blue-light: #79a2ec;
+      --blue-pale: #bcd4f6;
+      --white: #f7fbff;
+      --muted: #a8bbd0;
+      --line: rgba(188, 212, 246, .15);
+      --font-body: "DM Sans", sans-serif;
+      --font-display: "Manrope", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: var(--white);
+      font: 400 16px/1.65 var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+    body.menu-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img { display: block; max-width: 100%; }
+    .container { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
+    .section { padding: 112px 0; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin: 0 0 18px; color: var(--blue-light);
+      font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { font-family: var(--font-display); letter-spacing: -.045em; }
+    h2 { margin-bottom: 18px; font-size: clamp(2.2rem, 4vw, 3.65rem); line-height: 1.12; }
+    .section-intro { max-width: 590px; margin: 0 auto 54px; text-align: center; }
+    .section-intro > p:last-child { margin-bottom: 0; color: var(--muted); font-size: 17px; }
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, #fff 5%, var(--blue-pale) 54%, var(--blue-light) 100%);
+      background-clip: text; -webkit-background-clip: text;
+    }
+    .button {
+      display: inline-flex; min-height: 52px; align-items: center; justify-content: center; gap: 10px;
+      padding: 0 23px; border: 1px solid transparent; border-radius: 999px;
+      background: linear-gradient(110deg, #3768df, #628ce9);
+      color: #fff; font-size: 14px; font-weight: 700;
+      box-shadow: 0 10px 32px rgba(43, 86, 200, .3);
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      cursor: pointer;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(43, 86, 200, .42); }
+    .button svg { width: 16px; height: 16px; }
+    .button-quiet {
+      background: transparent; border-color: rgba(188, 212, 246, .35); box-shadow: none;
+    }
+    .button-quiet:hover { background: rgba(188, 212, 246, .08); box-shadow: none; }
+
+    /* Navigation */
+    .site-header {
+      position: absolute; z-index: 20; inset: 0 0 auto;
+      border-bottom: 1px solid rgba(255,255,255,.09);
+    }
+    .nav-wrap { height: 82px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font: 800 20px var(--font-display); letter-spacing: -.06em; }
+    .brand-mark {
+      display: grid; width: 32px; height: 32px; place-items: center; border-radius: 11px;
+      background: linear-gradient(145deg, #79a2ec, #2b56c8); box-shadow: 0 4px 18px #2b56c866;
+    }
+    .brand-mark svg { width: 19px; height: 19px; }
+    .brand span:last-child { color: var(--blue-pale); font-weight: 600; }
+    .nav-links { display: flex; align-items: center; gap: 31px; margin: 0; padding: 0; list-style: none; }
+    .nav-links a:not(.button) { color: #d3dfed; font-size: 13px; transition: color .2s ease; }
+    .nav-links a:not(.button):hover { color: #fff; }
+    .nav-links .button { min-height: 42px; padding: 0 17px; font-size: 12px; }
+    .menu-toggle {
+      display: none; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%;
+      background: rgba(7, 27, 50, .5); color: #fff; cursor: pointer;
+    }
+    .menu-toggle svg { width: 20px; height: 20px; }
+
+    /* Hero */
+    .hero {
+      position: relative; display: flex; min-height: 760px; min-height: min(850px, 100svh);
+      align-items: center; overflow: hidden; isolation: isolate;
+      background: #0b3154;
+    }
+    .hero::before {
+      position: absolute; z-index: -2; inset: 0; content: "";
+      background: url("https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2200&q=88") center 48% / cover no-repeat;
+      transform: scale(1.02);
+    }
+    .hero::after {
+      position: absolute; z-index: -1; inset: 0; content: "";
+      background:
+        linear-gradient(90deg, rgba(4, 20, 39, .91) 0%, rgba(5, 28, 51, .76) 44%, rgba(7, 27, 50, .15) 100%),
+        linear-gradient(0deg, var(--ink) 0%, transparent 32%, rgba(5, 20, 39, .18) 100%);
+    }
+    .hero-content { position: relative; z-index: 1;  width: min(1200px, calc(100% - 100px)); margin-inline: auto; padding: 150px 0 108px; }
+    .hero-copy { max-width: 630px; }
+    .hero .eyebrow { color: #bcd4f6; }
+    .hero h1 { max-width: 650px; margin: 0 0 22px; font-size: clamp(3.35rem, 7.2vw, 6.35rem); line-height: .99; }
+    .hero-copy > p:not(.eyebrow) { max-width: 525px; margin-bottom: 31px; color: #d6e2ef; font-size: clamp(16px, 1.6vw, 18px); }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; }
+    .hero-note { display: flex; align-items: center; gap: 9px; margin-top: 57px; color: #d7e4f0; font-size: 12px; }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #8ddbc9; box-shadow: 0 0 0 5px #8ddbc926; }
+    .goggle-display {
+      position: absolute; right: 3%; top: 50%; width: min(44vw, 510px); aspect-ratio: 1.24;
+      transform: translateY(-40%); filter: drop-shadow(0 26px 48px rgba(0,0,0,.4));
+      animation: float 6s ease-in-out infinite;
+    }
+    .goggle-svg { width: 100%; height: 100%; overflow: visible; }
+    .hud-card {
+      position: absolute; right: 1%; bottom: -3%; min-width: 170px; padding: 12px 15px;
+      border: 1px solid rgba(188,212,246,.3); border-radius: 13px;
+      background: rgba(8, 34, 57, .72); backdrop-filter: blur(14px);
+      box-shadow: 0 12px 36px #06172955;
+    }
+    .hud-card small { display: block; color: #a7bdd3; font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
+    .hud-card strong { display: block; margin-top: 2px; color: #fff; font: 700 14px var(--font-display); }
+    .hud-card span { color: #9dc2ff; font-size: 10px; }
+    @keyframes float { 0%,100% { transform: translateY(-40%) rotate(-1deg); } 50% { transform: translateY(calc(-40% - 11px)) rotate(1deg); } }
+    .hero-scroll {
+      position: absolute; right: 24px; bottom: 38px; display: flex; align-items: center; gap: 9px;
+      color: #d1deeb; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; writing-mode: vertical-rl;
+    }
+    .hero-scroll::after { content: ""; width: 1px; height: 37px; background: #bcd4f688; }
+
+    /* How it works */
+    .how-section { background: linear-gradient(180deg, #071b32, #0a213a); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .step-card {
+      position: relative; min-height: 255px; padding: 29px;
+      border: 1px solid var(--line); border-radius: 18px;
+      background: linear-gradient(145deg, rgba(188,212,246,.075), rgba(188,212,246,.025));
+      overflow: hidden; transition: transform .25s ease, border-color .25s ease;
+    }
+    .step-card:hover { transform: translateY(-5px); border-color: rgba(121,162,236,.5); }
+    .step-card::after {
+      position: absolute; right: -25px; bottom: -46px; width: 145px; height: 145px;
+      border: 1px solid rgba(121,162,236,.13); border-radius: 50%; content: "";
+      box-shadow: 0 0 0 22px rgba(121,162,236,.035), 0 0 0 44px rgba(121,162,236,.025);
+    }
+    .step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 42px; }
+    .step-icon { display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid #79a2ec55; border-radius: 15px; background: #2b56c826; color: #a9c5ff; }
+    .step-icon svg { width: 22px; height: 22px; }
+    .step-number { color: #7692b3; font: 600 12px var(--font-display); letter-spacing: .1em; }
+    .step-card h3 { margin: 0 0 8px; font-size: 20px; }
+    .step-card p { max-width: 275px; margin: 0; color: var(--muted); font-size: 14px; }
+
+    /* Marine life */
+    .life-section { background: #f3f7fc; color: #102b47; }
+    .life-section .eyebrow { color: var(--blue); }
+    .life-section .section-intro > p:last-child { color: #667b92; }
+    .species-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 17px; }
+    .species-card {
+      overflow: hidden; border-radius: 16px; background: #fff;
+      box-shadow: 0 10px 35px rgba(24, 55, 94, .08);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .species-card:hover { transform: translateY(-6px); box-shadow: 0 18px 42px rgba(24,55,94,.14); }
+    .species-image { position: relative; height: 220px; overflow: hidden; background: #d9e8f5; }
+    .species-image::after { position: absolute; inset: 45% 0 0; content: ""; background: linear-gradient(transparent, rgba(5,27,48,.42)); }
+    .species-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .species-card:hover .species-image img { transform: scale(1.06); }
+    .species-tag {
+      position: absolute; z-index: 1; left: 13px; bottom: 13px; padding: 5px 10px;
+      border: 1px solid #ffffff52; border-radius: 99px; background: #09234173;
+      color: #fff; font-size: 10px; font-weight: 600; backdrop-filter: blur(8px);
+    }
+    .species-copy { padding: 18px 18px 20px; }
+    .species-copy h3 { margin: 0 0 7px; font-size: 17px; letter-spacing: -.03em; }
+    .species-copy p { margin: 0; color: #687b91; font-size: 12px; line-height: 1.6; }
+    .learning-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px;
+      padding-top: 25px; border-top: 1px solid #dce5ef;
+    }
+    .learning-item { display: flex; align-items: center; gap: 10px; color: #415b76; font-size: 12px; font-weight: 600; }
+    .check-icon { flex: 0 0 23px; display: grid; width: 23px; height: 23px; place-items: center; border-radius: 50%; background: #e4edff; color: var(--blue); }
+    .check-icon svg { width: 12px; height: 12px; }
+
+    /* Technology */
+    .tech-section { position: relative; overflow: hidden; }
+    .tech-section::before { position: absolute; top: 0; left: -180px; width: 560px; height: 560px; border-radius: 50%; background: #2b56c812; filter: blur(35px); content: ""; }
+    .tech-layout { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 75px; }
+    .tech-visual { position: relative; min-height: 440px; border: 1px solid var(--line); border-radius: 22px; background: #0c2947; overflow: hidden; }
+    .tech-visual img { width: 100%; height: 100%; min-height: 440px; object-fit: cover; opacity: .8; }
+    .tech-visual::after { position: absolute; inset: 0; content: ""; background: linear-gradient(0deg, rgba(5,24,44,.64), transparent 70%), linear-gradient(90deg, #09254222, transparent); }
+    .scan-frame {
+      position: absolute; z-index: 1; top: 27%; left: 34%; width: 35%; aspect-ratio: 1;
+      border: 1px solid rgba(179,222,255,.85); border-radius: 50%;
+      box-shadow: 0 0 0 1px #b3deff33, 0 0 25px #79a2ec66, inset 0 0 26px #79a2ec2b;
+    }
+    .scan-frame::before, .scan-frame::after { position: absolute; content: ""; background: #b3deff; box-shadow: 0 0 11px #79a2ec; }
+    .scan-frame::before { top: 50%; left: -13%; width: 126%; height: 1px; }
+    .scan-frame::after { top: -13%; left: 50%; width: 1px; height: 126%; }
+    .scan-label {
+      position: absolute; z-index: 2; right: 8%; bottom: 10%; padding: 13px 17px;
+      border: 1px solid #bcd4f644; border-radius: 11px; background: #061d34c7; backdrop-filter: blur(12px);
+    }
+    .scan-label small { display: block; color: #a9c5df; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+    .scan-label strong { color: #fff; font: 700 14px var(--font-display); }
+    .tech-copy h2 { max-width: 550px; }
+    .tech-copy > p:not(.eyebrow) { max-width: 490px; color: var(--muted); }
+    .tech-points { display: grid; gap: 19px; margin: 31px 0 0; padding: 0; list-style: none; }
+    .tech-points li { display: flex; gap: 14px; align-items: flex-start; }
+    .tech-points .check-icon { margin-top: 2px; background: #2b56c82b; color: #9bb9ff; }
+    .tech-points strong { display: block; margin-bottom: 2px; font-size: 14px; }
+    .tech-points span:last-child { display: block; color: var(--muted); font-size: 12px; }
+
+    /* Conservation */
+    .mission-section { position: relative; padding: 112px 0; overflow: hidden; isolation: isolate; }
+    .mission-section::before {
+      position: absolute; z-index: -2; inset: 0; content: "";
+      background: url("https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=2000&q=85") center 45% / cover no-repeat;
+    }
+    .mission-section::after {
+      position: absolute; z-index: -1; inset: 0; content: "";
+      background: linear-gradient(90deg, rgba(5,22,39,.94), rgba(5,26,48,.73) 60%, rgba(5,26,48,.43)), linear-gradient(0deg, rgba(7,27,50,.55), transparent);
+    }
+    .mission-copy { max-width: 645px; }
+    .mission-copy h2 { font-size: clamp(2.45rem, 5vw, 4.4rem); }
+    .mission-copy > p:not(.eyebrow) { max-width: 560px; color: #d1dfec; font-size: 17px; }
+    .mission-points { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 29px; }
+    .mission-pill { padding: 9px 13px; border: 1px solid #d8eaff50; border-radius: 99px; background: #09254378; color: #e3edf8; font-size: 11px; backdrop-filter: blur(7px); }
+    .mission-note { margin: 23px 0 0; color: #acc2d8; font-size: 12px; }
+
+    /* Audience */
+    .audience-section { background: linear-gradient(180deg, #0a213a, #071b32); }
+    .audience-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 13px; }
+    .audience-card {
+      min-height: 190px; padding: 22px 18px; border: 1px solid var(--line); border-radius: 15px;
+      background: #ffffff08; transition: background .2s ease, transform .2s ease;
+    }
+    .audience-card:hover { transform: translateY(-4px); background: #ffffff11; }
+    .audience-card .step-icon { width: 42px; height: 42px; margin-bottom: 23px; border-radius: 13px; }
+    .audience-card .step-icon svg { width: 19px; height: 19px; }
+    .audience-card h3 { margin-bottom: 7px; font-size: 15px; line-height: 1.3; }
+    .audience-card p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+
+    /* Final call to action and footer */
+    .cta-section { position: relative; padding: 88px 0; overflow: hidden; background: linear-gradient(115deg, #173b93, #2b56c8 58%, #477bd8); }
+    .cta-section::before, .cta-section::after { position: absolute; border: 1px solid #ffffff18; border-radius: 50%; content: ""; }
+    .cta-section::before { width: 580px; height: 580px; top: -365px; right: -76px; box-shadow: 0 0 0 42px #ffffff08, 0 0 0 85px #ffffff05; }
+    .cta-section::after { width: 300px; height: 300px; bottom: -250px; left: -30px; box-shadow: 0 0 0 40px #ffffff08; }
+    .cta-content { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr .85fr; align-items: center; gap: 55px; }
+    .cta-content .eyebrow { color: #c9dcff; }
+    .cta-content h2 { max-width: 590px; margin-bottom: 13px; font-size: clamp(2.25rem, 4.5vw, 3.7rem); }
+    .cta-content > div:first-child > p:last-child { max-width: 460px; margin: 0; color: #d8e6ff; }
+    .interest-form { display: flex; gap: 9px; padding: 7px; border: 1px solid #ffffff4a; border-radius: 999px; background: #081e3766; }
+    .interest-form input { width: 100%; min-width: 0; padding: 0 14px; border: 0; outline: 0; background: transparent; color: #fff; font-size: 13px; }
+    .interest-form input::placeholder { color: #d1dff2; }
+    .interest-form input:focus-visible { outline: 2px solid #dceaff; outline-offset: -2px; border-radius: 6px; }
+    .interest-form .button { flex: 0 0 auto; min-height: 46px; background: #fff; color: #2148aa; box-shadow: none; }
+    .interest-form .button:hover { background: #eaf1ff; }
+    .form-message { min-height: 22px; margin: 9px 0 0 15px; color: #f0f5ff; font-size: 12px; }
+    .form-message.success { color: #d4ffe9; }
+    .site-footer { padding: 29px 0; background: #06172a; }
+    .footer-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+    .footer-brand { font-size: 17px; }
+    .footer-nav, .social-links { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
+    .footer-nav a, .social-links a, .copyright { color: #9bb0c6; font-size: 11px; transition: color .2s ease; }
+    .footer-nav a:hover, .social-links a:hover { color: #fff; }
+    .social-links { gap: 14px; }
+    .social-links a { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #bcd4f629; border-radius: 50%; font-size: 10px; font-weight: 700; }
+    .copyright { width: 100%; margin: -4px 0 0; color: #7188a1; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+    @media (max-width: 980px) {
+      .goggle-display { right: -9%; width: 48vw; opacity: .87; }
+      .hero-copy { max-width: 590px; }
+      .species-grid { grid-template-columns: repeat(2, 1fr); }
+      .species-image { height: 250px; }
+      .audience-grid { grid-template-columns: repeat(3, 1fr); }
+      .tech-layout { gap: 42px; }
+    }
+    @media (max-width: 720px) {
+      .container { width: min(100% - 36px, 540px); }
+      .section { padding: 82px 0; }
+      .nav-wrap { height: 72px; }
+      .menu-toggle { display: grid; place-items: center; }
+      .nav-links {
+        position: fixed; inset: 72px 0 auto; display: flex; flex-direction: column; align-items: stretch; gap: 0;
+        padding: 13px 22px 24px; border-bottom: 1px solid var(--line); background: rgba(6,23,42,.98);
+        opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      }
+      .nav-links.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+      .nav-links li { border-bottom: 1px solid #bcd4f614; }
+      .nav-links a:not(.button) { display: block; padding: 13px 2px; font-size: 15px; }
+      .nav-links .button { margin-top: 16px; }
+      .hero { min-height: 790px; min-height: min(860px, 100svh); align-items: flex-start; }
+      .hero::before { background-position: 58% center; }
+      .hero::after { background: linear-gradient(90deg, rgba(4,20,39,.86), rgba(5,28,51,.55)), linear-gradient(0deg, var(--ink) 0%, transparent 58%); }
+      .hero-content { padding: 140px 0 65px; }
+      .hero h1 { max-width: 540px; font-size: clamp(3rem, 12vw, 5rem); }
+      .hero-copy > p:not(.eyebrow) { max-width: 500px; font-size: 15px; }
+      .goggle-display { top: auto; right: -3%; bottom: 23px; width: min(72vw, 370px); transform: none; opacity: .92; animation: none; }
+      .hud-card { right: 0; bottom: -4%; min-width: 142px; padding: 9px 11px; }
+      .hud-card strong { font-size: 12px; }
+      .hero-scroll { display: none; }
+      .hero-note { margin-top: 31px; }
+      .steps { grid-template-columns: 1fr; gap: 13px; }
+      .step-card { min-height: 215px; }
+      .step-top { margin-bottom: 28px; }
+      .species-grid { gap: 12px; }
+      .species-image { height: 190px; }
+      .species-copy { padding: 14px; }
+      .species-copy h3 { font-size: 15px; }
+      .learning-strip { grid-template-columns: repeat(2, 1fr); gap: 14px 8px; }
+      .tech-layout { grid-template-columns: 1fr; gap: 37px; }
+      .tech-visual, .tech-visual img { min-height: 330px; }
+      .tech-visual { order: 2; }
+      .mission-section { padding: 85px 0; }
+      .mission-section::before { background-position: 56% center; }
+      .mission-copy > p:not(.eyebrow) { font-size: 15px; }
+      .audience-grid { grid-template-columns: repeat(2, 1fr); }
+      .audience-card { min-height: 175px; padding: 17px 15px; }
+      .cta-content { grid-template-columns: 1fr; gap: 28px; }
+      .cta-section { padding: 75px 0; }
+      .footer-row { justify-content: flex-start; }
+      .footer-nav { order: 3; width: 100%; gap: 15px; }
+      .copyright { order: 4; }
+      .social-links { margin-left: auto; }
+    }
+    @media (max-width: 400px) {
+      .container { width: calc(100% - 30px); }
+      .hero-actions .button { padding-inline: 16px; font-size: 12px; }
+      .species-image { height: 155px; }
+      .species-copy p { font-size: 11px; }
+      .learning-item { align-items: flex-start; font-size: 11px; }
+      .interest-form { padding: 5px; }
+      .interest-form input { padding-inline: 9px; font-size: 12px; }
+      .interest-form .button { min-height: 42px; padding-inline: 13px; font-size: 12px; }
+    }
+  </style>
 </head>
 <body>
-    <h1>IN PROGRESS</h1>
-    
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#home" aria-label="The Googles home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 13c3.1-4.1 6.3-4.1 9.2 0s6.3 4.1 8.8 0M5.2 17c2.4-2.8 4.8-2.8 7.1 0s4.7 2.8 6.7 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="2" fill="white"/></svg>
+        </span>
+        <span>the <span>googles</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <nav aria-label="Main navigation">
+        <ul class="nav-links" id="primary-navigation">
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#marine-life">Marine life</a></li>
+          <li><a href="#technology">Technology</a></li>
+          <li><a href="#mission">Our impact</a></li>
+          <li><a class="button" href="#join">Get early updates <span aria-hidden="true">→</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="container hero-content">
+        <div class="hero-copy">
+          <p class="eyebrow">A new perspective beneath the surface</p>
+          <h1 id="hero-title" class="gradient-text">Discover the Ocean. Understand Every Life.</h1>
+          <p>Meet the next generation of underwater exploration. Our AI-powered smart goggles identify marine species in real time, bringing the wonders of the ocean directly into your field of view.</p>
+          <div class="hero-actions">
+            <a class="button" href="#how">Discover the Experience
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="button button-quiet" href="#technology">Explore the Technology</a>
+          </div>
+          <div class="hero-note"><span class="pulse-dot" aria-hidden="true"></span> A closer connection to the underwater world</div>
+        </div>
+        <div class="goggle-display" aria-label="Illustration of smart diving goggles with an underwater information display" role="img">
+          <svg class="goggle-svg" viewBox="0 0 660 440" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="frame" x1="124" y1="126" x2="526" y2="330" gradientUnits="userSpaceOnUse"><stop stop-color="#D8E9FC"/><stop offset=".28" stop-color="#6382A6"/><stop offset=".55" stop-color="#F0F7FF"/><stop offset="1" stop-color="#52718F"/></linearGradient>
+              <linearGradient id="lens" x1="116" y1="170" x2="318" y2="288" gradientUnits="userSpaceOnUse"><stop stop-color="#A3D9FF" stop-opacity=".85"/><stop offset="1" stop-color="#126A9C" stop-opacity=".36"/></linearGradient>
+              <linearGradient id="lens2" x1="345" y1="170" x2="548" y2="288" gradientUnits="userSpaceOnUse"><stop stop-color="#9BDAFF" stop-opacity=".82"/><stop offset="1" stop-color="#125C8A" stop-opacity=".35"/></linearGradient>
+              <filter id="shadow" x="48" y="94" width="574" height="286" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="13"/></filter>
+            </defs>
+            <ellipse cx="335" cy="330" rx="245" ry="31" fill="#020C18" fill-opacity=".52" filter="url(#shadow)"/>
+            <path d="M86 200c-33-10-60-8-72 7-10 13-7 35 9 44l55 28M574 200c33-10 60-8 72 7 10 13 7 35-9 44l-55 28" stroke="url(#frame)" stroke-width="22" stroke-linecap="round"/>
+            <path d="M95 158c13-23 42-35 88-38l74-6c33-3 54 7 73 28 19-21 40-31 73-28l74 6c46 3 75 15 88 38 14 24 14 72-1 104-14 30-45 44-86 48l-69 7c-43 4-68-10-83-41l-16-34-16 34c-15 31-40 45-83 41l-69-7c-41-4-72-18-86-48-15-32-15-80-1-104Z" fill="#142D45" fill-opacity=".92" stroke="url(#frame)" stroke-width="12"/>
+            <path d="M111 168c8-13 28-21 64-24l76-6c25-2 38 6 50 21l13 17v38l-15 40c-8 20-23 29-53 27l-70-6c-32-3-50-13-59-33-10-23-15-56-6-74Z" fill="url(#lens)" stroke="#D1EDFF" stroke-opacity=".7" stroke-width="3"/>
+            <path d="M549 168c-8-13-28-21-64-24l-76-6c-25-2-38 6-50 21l-13 17v38l15 40c8 20 23 29 53 27l70-6c32-3 50-13 59-33 10-23 15-56 6-74Z" fill="url(#lens2)" stroke="#D1EDFF" stroke-opacity=".7" stroke-width="3"/>
+            <path d="M128 176c31-17 73-25 122-23M532 176c-31-17-73-25-122-23" stroke="white" stroke-opacity=".48" stroke-width="5" stroke-linecap="round"/>
+            <path d="M278 202h104" stroke="#E3F3FF" stroke-opacity=".7" stroke-width="12" stroke-linecap="round"/>
+            <path d="M194 218c22-17 39-12 55 0-16 14-34 18-55 0Zm260 0c-22-17-39-12-55 0 16 14 34 18 55 0Z" fill="#D9F3FF" fill-opacity=".9"/>
+            <circle cx="221" cy="218" r="4" fill="#25659D"/><circle cx="433" cy="218" r="4" fill="#25659D"/>
+            <path d="M203 304c40 15 80 20 127 17 47 3 87-2 127-17" stroke="#8EABCA" stroke-width="9" stroke-linecap="round"/>
+          </svg>
+          <div class="hud-card"><small>Now in view</small><strong>Loggerhead turtle</strong><span>Marine life · Mediterranean</span></div>
+        </div>
+      </div>
+      <a class="hero-scroll" href="#how">Scroll to explore</a>
+    </section>
+
+    <section class="section how-section" id="how">
+      <div class="container">
+        <div class="section-intro reveal">
+          <p class="eyebrow">Easy as 1, 2, sea</p>
+          <h2>Three steps to a <span class="gradient-text">deeper dive.</span></h2>
+          <p>Stay present in the water. Let the discoveries come to you.</p>
+        </div>
+        <div class="steps">
+          <article class="step-card reveal">
+            <div class="step-top"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13c1.8-3.4 4.1-5 8-5s6.2 1.6 8 5l-1.6 3.2a2 2 0 0 1-1.8 1.1h-2.2l-1-2h-2.8l-1 2H7.4a2 2 0 0 1-1.8-1.1L4 13Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 10.5h.01M15 10.5h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></span><span class="step-number">01 / 03</span></div>
+            <h3>Put Them On</h3><p>Wear the smart goggles, take a breath, and step into a whole new underwater world.</p>
+          </article>
+          <article class="step-card reveal">
+            <div class="step-top"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.6"/><path d="m16 16 4.2 4.2M8 11c1.8-2.3 3.6-2.3 5.4 0M10.7 8v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="step-number">02 / 03</span></div>
+            <h3>Look Around</h3><p>Explore at your own pace while AI recognizes the marine life around you.</p>
+          </article>
+          <article class="step-card reveal">
+            <div class="step-top"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12s3.2-5.5 9-5.5 9 5.5 9 5.5-3.2 5.5-9 5.5S3 12 3 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg></span><span class="step-number">03 / 03</span></div>
+            <h3>Discover</h3><p>See species names and helpful context in your field of view, without leaving the water.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section life-section" id="marine-life">
+      <div class="container">
+        <div class="section-intro reveal">
+          <p class="eyebrow">Meet your neighbors</p>
+          <h2>A whole world <span style="color:#2b56c8">worth knowing.</span></h2>
+          <p>From familiar faces to hidden wonders, every encounter can teach you something new.</p>
+        </div>
+        <div class="species-grid">
+          <article class="species-card reveal">
+            <div class="species-image"><img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=760&q=82" alt="Sea turtle swimming in clear blue water" loading="lazy"><span class="species-tag">Vulnerable species</span></div>
+            <div class="species-copy"><h3>Loggerhead Sea Turtle</h3><p>A long-distance traveler that returns to the beaches where it hatched to nest.</p></div>
+          </article>
+          <article class="species-card reveal">
+            <div class="species-image"><img src="https://images.unsplash.com/photo-1545670723-196ed0954986?auto=format&fit=crop&w=760&q=82" alt="Octopus camouflaged among an underwater rocky reef" loading="lazy"><span class="species-tag">Clever camouflager</span></div>
+            <div class="species-copy"><h3>Mediterranean Octopus</h3><p>A curious, highly adaptable invertebrate that can change color and texture.</p></div>
+          </article>
+          <article class="species-card reveal">
+            <div class="species-image"><img src="https://images.unsplash.com/photo-1607153333879-c174d265f1d2?auto=format&fit=crop&w=760&q=82" alt="Dolphin gliding through the ocean" loading="lazy"><span class="species-tag">Social swimmer</span></div>
+            <div class="species-copy"><h3>Bottlenose Dolphin</h3><p>An intelligent marine mammal known for its social groups and signature clicks.</p></div>
+          </article>
+          <article class="species-card reveal">
+            <div class="species-image"><img src="https://images.unsplash.com/photo-1535591273668-578e31182c4f?auto=format&fit=crop&w=760&q=82" alt="Moray eel resting among colorful reef corals" loading="lazy"><span class="species-tag">Reef resident</span></div>
+            <div class="species-copy"><h3>Mediterranean Moray Eel</h3><p>A secretive reef dweller that shelters in rocky crevices during the day.</p></div>
+          </article>
+        </div>
+        <div class="learning-strip reveal" aria-label="Discover more about marine species">
+          <div class="learning-item"><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Fish, mammals &amp; plants</div>
+          <div class="learning-item"><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Habitats &amp; characteristics</div>
+          <div class="learning-item"><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Species to approach with care</div>
+          <div class="learning-item"><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Conservation status</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section tech-section" id="technology">
+      <div class="container tech-layout">
+        <div class="tech-visual reveal">
+          <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1100&q=82" alt="Diver exploring a vibrant underwater environment" loading="lazy">
+          <span class="scan-frame" aria-hidden="true"></span>
+          <div class="scan-label"><small>Identified in your view</small><strong>Marine life, made clear.</strong></div>
+        </div>
+        <div class="tech-copy reveal">
+          <p class="eyebrow">Intelligence, in your element</p>
+          <h2>Artificial Intelligence Meets <span class="gradient-text">Ocean Exploration.</span></h2>
+          <p>Underwater visual recognition meets an integrated display, bringing useful context into your field of view while you explore.</p>
+          <ul class="tech-points">
+            <li><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><strong>Real-time recognition</strong><span>AI helps identify the species you encounter.</span></span></li>
+            <li><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><strong>Information in view</strong><span>Discover names and context without looking away.</span></span></li>
+            <li><span class="check-icon"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8 3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><strong>Made to feel intuitive</strong><span>Learn as you go, without interrupting the dive.</span></span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="mission-section" id="mission">
+      <div class="container">
+        <div class="mission-copy reveal">
+          <p class="eyebrow">Wonder can make a difference</p>
+          <h2>More Than Exploration: <span class="gradient-text">Protecting the Ocean.</span></h2>
+          <p>The more we understand the life beneath the waves, the more we care about its future. Every encounter is a chance to see the ocean as a living world worth protecting.</p>
+          <div class="mission-points">
+            <span class="mission-pill">Celebrate marine biodiversity</span>
+            <span class="mission-pill">Encourage respectful encounters</span>
+            <span class="mission-pill">Understand threatened species</span>
+          </div>
+          <p class="mission-note">In time, biodiversity observations may also help contribute to marine conservation and research.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-section" id="who-its-for">
+      <div class="container">
+        <div class="section-intro reveal">
+          <p class="eyebrow">Your kind of adventure</p>
+          <h2>For everyone curious about<span class="gradient-text">what lies beneath.</span></h2>
+          <p>Whether it's your first snorkel or your hundredth dive, there's always more to discover.</p>
+        </div>
+        <div class="audience-grid">
+          <article class="audience-card reveal"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 13c2-3.4 4.7-5.1 8-5.1s6 1.7 8 5.1M6.5 16c1.5-1.8 3.3-2.7 5.5-2.7s4 .9 5.5 2.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="6" r="1.5" fill="currentColor"/></svg></span><h3>Casual Divers</h3><p>Discover marine life while enjoying every dive.</p></article>
+          <article class="audience-card reveal"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 14c2.2-3.2 4.9-4.8 8-4.8s5.8 1.6 8 4.8M7 17h10M9 6.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="6.5" r="2" stroke="currentColor" stroke-width="1.6"/></svg></span><h3>Snorkeling Enthusiasts</h3><p>Turn every swim into an opportunity to learn.</p></article>
+          <article class="audience-card reveal"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 3 8.3 7 10 4-1.7 7-5.4 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>Eco-Tourists</h3><p>Explore with a deeper understanding of ocean ecosystems.</p></article>
+          <article class="audience-card reveal"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c.4-3 2.3-4.5 5.5-4.5s5.1 1.5 5.5 4.5m.2-4c3.3-.6 5.2.7 5.8 3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><h3>Families &amp; Young Explorers</h3><p>Make underwater adventures educational and unforgettable.</p></article>
+          <article class="audience-card reveal"><span class="step-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V8l8-4 8 4v11M8 19v-6h8v6M4 10h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>Diving Schools</h3><p>Bring a new interactive learning experience to students.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="join">
+      <div class="container cta-content">
+        <div class="reveal">
+          <p class="eyebrow">Your next adventure starts here</p>
+          <h2>The Ocean Is Full of Stories. Start Discovering Them.</h2>
+          <p>Make every underwater adventure an opportunity to discover, learn and protect marine life.</p>
+        </div>
+        <div class="reveal">
+          <form class="interest-form" id="interest-form">
+            <label for="email-address" class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">Your email address</label>
+            <input id="email-address" name="email" type="email" autocomplete="email" placeholder="Enter your email address" required>
+            <button class="button" type="submit">Join the Ocean Exploration <span aria-hidden="true">→</span></button>
+          </form>
+          <p class="form-message" id="form-message" role="status" aria-live="polite">Sign up for updates on product development and launch.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <a class="brand footer-brand" href="#home" aria-label="The Googles home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 13c3.1-4.1 6.3-4.1 9.2 0s6.3 4.1 8.8 0M5.2 17c2.4-2.8 4.8-2.8 7.1 0s4.7 2.8 6.7 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="2" fill="white"/></svg></span>
+        <span>the <span>googles</span></span>
+      </a>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#how">How it works</a><a href="#marine-life">Marine life</a><a href="#technology">Technology</a><a href="#mission">Our impact</a>
+      </nav>
+      <div class="social-links" aria-label="Social media">
+        <a href="https://www.instagram.com/" aria-label="Instagram">Instagram</a>
+        <a href="https://www.youtube.com/" aria-label="YouTube">YouTube</a>
+        <a href="https://www.tiktok.com/" aria-label="TikTok">TikTok</a>
+      </div>
+      <p class="copyright">© <span id="current-year">2026</span> The Googles. See the ocean differently.</p>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navigation = document.querySelector(".nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", String(!isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Open navigation menu" : "Close navigation menu");
+      navigation.classList.toggle("is-open", !isOpen);
+      document.body.classList.toggle("menu-open", !isOpen);
+    });
+
+    navigation.addEventListener("click", (event) => {
+      if (event.target.closest("a")) {
+        navigation.classList.remove("is-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open navigation menu");
+        document.body.classList.remove("menu-open");
+      }
+    });
+
+    const revealItems = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealItems.forEach((item) => revealObserver.observe(item));
+    } else {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+    }
+
+    document.getElementById("current-year").textContent = new Date().getFullYear();
+
+    document.getElementById("interest-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.reportValidity()) return;
+
+      const email = new FormData(form).get("email");
+      const message = document.getElementById("form-message");
+      message.textContent = `You're on the list! We'll send product development and launch updates to ${email}.`;
+      message.classList.add("success");
+      form.reset();
+    });
+  </script>
 </body>
 </html>
