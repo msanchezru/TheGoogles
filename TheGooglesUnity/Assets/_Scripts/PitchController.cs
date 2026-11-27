@@ -5,8 +5,8 @@ public class PitchController : MonoBehaviour
 {
     [SerializeField] private float _sensitivity = 0.1f;
 
-    private const float MinPitch = -30f;
-    private const float MaxPitch = 30f;
+    private const float MinPitch = -60f;
+    private const float MaxPitch = 60f;
 
     private float yaw;
     private float pitch;
